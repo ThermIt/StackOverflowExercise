@@ -1,0 +1,15 @@
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid black;
+}
+
+th {
+    background-color: lightgray;
+}
+
+.answered {
+    background-color: greenyellow;
+}
