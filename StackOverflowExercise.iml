@@ -62,5 +62,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="javax.servlet:servlet-api:2.5" level="project" />
+    <orderEntry type="library" name="javax.servlet:jsp-api:2.0" level="project" />
   </component>
 </module>

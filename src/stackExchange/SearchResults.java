@@ -13,7 +13,8 @@ public class SearchResults {
     private static final long UNIX_EPOCH_MULTIPLIER = 1000; // difference between Date milliseconds and unix epoch time
 
     private List<SearchItem> items;
-    private boolean hasMore;
+    private boolean hasError = false;
+    private boolean hasMore = false;
     private long quotaMax;
     private long quotaRemaining;
 
@@ -53,11 +54,9 @@ public class SearchResults {
         GsonBuilder gsonBuilder = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
 
-        gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                long unixEpochTime = json.getAsJsonPrimitive().getAsLong();
-                return new Date(convertUnixEpochToMilliseconds(unixEpochTime));
-            }
+        gsonBuilder.registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json1, typeOfT, context) -> {
+            long unixEpochTime = json1.getAsJsonPrimitive().getAsLong();
+            return new Date(convertUnixEpochToMilliseconds(unixEpochTime));
         });
 
         Gson gson = gsonBuilder.create();
@@ -66,5 +65,13 @@ public class SearchResults {
 
     private static long convertUnixEpochToMilliseconds(long unixEpochTime) {
         return unixEpochTime * UNIX_EPOCH_MULTIPLIER;
+    }
+
+    public boolean isHasError() {
+        return hasError;
+    }
+
+    public void setHasError(boolean hasError) {
+        this.hasError = hasError;
     }
 }

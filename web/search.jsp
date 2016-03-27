@@ -15,22 +15,23 @@
 <html>
   <head>
     <title>Search Stack Overflow question with text in title</title>
-
     <link rel="stylesheet" href="./css/search.css" type="text/css" />
   </head>
   <body>
     <%
       String searchParameter = request.getParameter("q");
     %>
-    <form action="/search.jsp" method="GET" >
+    <form action="./search.jsp" method="GET" >
       <input name="q" type="text"<%if(searchParameter != null) {%> value="<%= escapeHtml4(searchParameter) %>"<%}%>/>
       <input type="submit" value="Find"/>
     </form>
     <br/>
     <%
       if (searchParameter != null) {
+        SearchResults result = new StackExcangeSearch("stackoverflow").search(searchParameter);
+        if (result != null && result.getItems().size() > 0) {
     %>
-    <h2>Questions containing "<%= escapeHtml4(searchParameter) %>"</h2>
+    <h2>Questions with "<%= escapeHtml4(searchParameter) %>" in title</h2>
     <table>
       <tr>
         <th>Title</th>
@@ -38,23 +39,33 @@
         <th>And when</th>
       </tr>
       <%
-        SearchResults result = new StackExcangeSearch("stackoverflow").search(searchParameter);
-
-        for (SearchItem item : result.getItems()) { %>
-      <% if (item.isAnswered()) { %><tr class="answered"><% } else { %><tr><% } %>
+          for (SearchItem item : result.getItems()) {
+            if (item.isAnswered()) { %><tr class="answered"><% } else { %><tr><% }
+      %>
         <td>
-          <a href="<%= item.getLink() %>"><%= escapeHtml4(item.getTitle()) %></a>
+          <a href="<%= item.getLink() %>"><%= item.getTitle() %></a>
         </td>
         <td>
-          <%= escapeHtml4(item.getOwner().getDisplayName()) %>
+          <%= item.getOwner().getDisplayName() %>
         </td>
         <td>
           <%= escapeHtml4(item.getCreationDate().toString()) %>
         </td>
       </tr><%
+          }
+      %>
+    </table><%
+          if (result.isHasMore()) {
+            %><p>There are more questions on the Stack Overflow.</p><%
+          }
+        } else {
+          if (result.isHasError()) {
+            %><p>An error had occurred while fetching results.</p><%
+          } else {
+            %><p>No questions found.</p><%
+          }
         }
       }
-      %>
-    </table>
+    %>
   </body>
 </html>
